@@ -88,7 +88,7 @@ rgbTs.rgbTimeSeriesChart(
   col, aoi, Y_AXIS_BAND, VIS_PARAMS, 'console', OPTIONAL_PARAMS);
 ```
 
-This verison of the example adds the chart to a `ui.Panel` widget in the Map.
+This version of the example adds the chart to a `ui.Panel` widget in the Map.
 instead of the console. Notice that the `plotHere` parameter has changed from
 'console' to the name of the `ui.Panel` widget variable.
 
@@ -292,8 +292,8 @@ stretched RGB representation of three selected bands.
 | visParams.min | <code>Array</code> | An array of three band-specific values that define the minimum value to clamp the color stretch range to. Arrange the values in the same order as `visParams.bands` band names. Use units of the input image data. |
 | visParams.max | <code>Array</code> | An array of three band-specific values that define the maximum value to clamp the color stretch range to. Arrange the values in the same order as `visParams.bands` band names. Use units of the input image data. |
 | plotHere | <code>ui.Panel|String</code> | Either a `ui.Panel` to add the chart to or 'console' to print the chart to the Code Editor console. |
-| optionalParams | <code>Object</code> | Optional. A set of optional parameters to set for controlling region reduction and stying the chart. |
+| optionalParams | <code>Object</code> | Optional. A set of optional parameters to set for controlling region reduction and styling the chart. |
 | optionalParams.reducer | <code>ee.Reducer</code> | Optional. The region over which to reduce data. If unspecified, `ee.Reducer.first` is used. |
 | optionalParams.crs | <code>String</code> | Optional. The projection to work in. If unspecified, the projection of the first image is used. |
 | optionalParams.scale | <code>Number</code> | Optional. A nominal scale in meters of the projection to work in. If unspecified, the nominal scale of the first image is used. |
-| optionalParams.chartParams | <code>Object</code> | Optional. ui.Chart parameters accepected by `ui.Chart.setOptions`. See https://developers.google.com/earth-engine/guides/charts_style for more details. |
+| optionalParams.chartParams | <code>Object</code> | Optional. ui.Chart parameters accepted by `ui.Chart.setOptions`. See https://developers.google.com/earth-engine/guides/charts_style for more details. |
