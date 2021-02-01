@@ -1,6 +1,6 @@
 # ee-rgb-timeseries
 
-_For [Google Earth Engine](https://earthengine.google.com/) JavaScript Code Editor_
+_For the [Google Earth Engine](https://earthengine.google.com/) JavaScript Code Editor_
 
 Plots a chart to a `ui.Panel` or the Code Editor Console for a multi-band image
 time series. Observations are represented as circles whose color is the
@@ -15,20 +15,20 @@ stretched RGB representation of three selected bands.
 The steps are:
 
 1. Import the module.
-2. Define an area (`ee.Geometry.Polygon`) or point ('ee.Geometry.Point`)
+2. Define an area (`ee.Geometry.Polygon`) or point (`ee.Geometry.Point`)
 of interest.
 3. Build a time series image collection.
-4. Define region reduction and chart option parameters
+4. Define region reduction and chart option parameters.
 5. Provide inputs to the [`rgbTs.rgbTimeSeriesChart`](#rgbtimeserieschartcol-aoi-yaxisband-visparams-plothere-optionalparams) function.
 
 Note that the resulting chart can be printed to the console or added to a
-`ui.Panel` widget. See the `plotHere` parameter for the
+`ui.Panel` widget. See the `plotHere` parameter of the
 [`rgbTs.rgbTimeSeriesChart`](#rgbtimeserieschartcol-aoi-yaxisband-visparams-plothere-optionalparams)
 function (also see the second part of the [MODIS example](#modis-example))
 
 ### Module import
 
-Include the following line at the top of every script to import the library.
+Include the following line at the top of every script to import the module.
 
 ```js
 var rgbTs = require('users/jstnbraaten/modules:rgb-timeseries/rgb-timeseries.js');
@@ -88,7 +88,7 @@ rgbTs.rgbTimeSeriesChart(
   col, aoi, Y_AXIS_BAND, VIS_PARAMS, 'console', OPTIONAL_PARAMS);
 ```
 
-This version of the example adds the chart to a `ui.Panel` widget in the Map.
+This version of the example adds the chart to a `ui.Panel` widget in the map
 instead of the console. Notice that the `plotHere` parameter has changed from
 'console' to the name of the `ui.Panel` widget variable.
 
@@ -274,7 +274,7 @@ rgbTs.rgbTimeSeriesChart(
 
 ## Components
 
-### rgbTimeSeriesChart(col, aoi, yAxisBand, visParams, plotHere, optionalParams))
+### rgbTimeSeriesChart(col, aoi, yAxisBand, visParams, plotHere, optionalParams)
 
 Plots a chart to a `ui.Panel` or the Code Editor Console for a multi-band image
 time series. Observations are represented as circles whose color is the
