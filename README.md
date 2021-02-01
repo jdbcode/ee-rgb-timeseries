@@ -36,6 +36,8 @@ var rgbTs = require('users/jstnbraaten/modules:rgb-timeseries/rgb-timeseries.js'
 
 ### MODIS Example
 
+![](demo_02.png)
+
 ```js
 // Import rgb-timeseries module.
 var rgbTs = require(
@@ -103,6 +105,8 @@ rgbTs.rgbTimeSeriesChart(
 ```
 
 ### Landsat Example
+
+![](demo_03.png)
 
 ```js
 // Import rgb-timeseries module.
@@ -180,6 +184,8 @@ rgbTs.rgbTimeSeriesChart(
 ```
 
 ### Sentinel-2 Example
+
+![](demo_04.png)
 
 ```js
 // Import rgb-timeseries module.
