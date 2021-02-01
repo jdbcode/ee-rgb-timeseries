@@ -297,7 +297,7 @@ stretched RGB representation of three selected bands.
 | visParams.bands | <code>Array</code> | An array of three band names to respectively assign to red, green, and blue for RGB visualization. |
 | visParams.min | <code>Array</code> | An array of three band-specific values that define the minimum value to clamp the color stretch range to. Arrange the values in the same order as `visParams.bands` band names. Use units of the input image data. |
 | visParams.max | <code>Array</code> | An array of three band-specific values that define the maximum value to clamp the color stretch range to. Arrange the values in the same order as `visParams.bands` band names. Use units of the input image data. |
-| plotHere | <code>ui.Panel|String</code> | Either a `ui.Panel` to add the chart to or 'console' to print the chart to the Code Editor console. |
+| plotHere | <code>ui.Panel\|String</code> | Either a `ui.Panel` to add the chart to or 'console' to print the chart to the Code Editor console. |
 | optionalParams | <code>Object</code> | Optional. A set of optional parameters to set for controlling region reduction and styling the chart. |
 | optionalParams.reducer | <code>ee.Reducer</code> | Optional. The region over which to reduce data. If unspecified, `ee.Reducer.first` is used. |
 | optionalParams.crs | <code>String</code> | Optional. The projection to work in. If unspecified, the projection of the first image is used. |
