@@ -1,30 +1,30 @@
 # ee-rgb-timeseries
 
-_For Google Earth Engine JavaScript Code Editor_
+_For [Google Earth Engine](https://earthengine.google.com/) JavaScript Code Editor_
 
-Plots a chart to a ui.Panel or the Code Editor Console for a multi-band image
+Plots a chart to a `ui.Panel` or the Code Editor Console for a multi-band image
 time series. Observations are represented as circles whose color is the
 stretched RGB representation of three selected bands.
 
-[**Try the app** — click a point, get a Landsat RGB time series chart](https://code.earthengine.google.com/?scriptPath=users%2Fjstnbraaten%2Fmodules%3Argb-timeseries%2Frgb-timeseries-explorer)
+### [**Try the app** — click a point 🖱️, get a Landsat RGB time series chart 📈](https://code.earthengine.google.com/?scriptPath=users%2Fjstnbraaten%2Fmodules%3Argb-timeseries%2Frgb-timeseries-explorer)
 
-![](/docs/demo_01.png)
+![](demo_01.png)
 
 ## Guide
 
 The steps are:
 
 1. Import the module.
-2. Define an area (`ee.Geometry.Polygon`) or point ('ee.Geometry.Point')
+2. Define an area (`ee.Geometry.Polygon`) or point ('ee.Geometry.Point`)
 of interest.
 3. Build a time series image collection.
 4. Define region reduction and chart option parameters
-5. Provide inputs to the `rgbTs.rgbTimeSeriesChart` function.
+5. Provide inputs to the [`rgbTs.rgbTimeSeriesChart`](#rgbtimeserieschartcol-aoi-yaxisband-visparams-plothere-optionalparams) function.
 
 Note that the resulting chart can be printed to the console or added to a
 `ui.Panel` widget. See the `plotHere` parameter for the
-[`rgbTs.rgbTimeSeriesChart`]() function (also see the second part of the
-[MODIS example]())
+[`rgbTs.rgbTimeSeriesChart`](#rgbtimeserieschartcol-aoi-yaxisband-visparams-plothere-optionalparams)
+function (also see the second part of the [MODIS example](#modis-example))
 
 ### Module import
 
@@ -276,7 +276,7 @@ rgbTs.rgbTimeSeriesChart(
 
 ### rgbTimeSeriesChart(col, aoi, yAxisBand, visParams, plotHere, optionalParams))
 
-Plots a chart to a ui.Panel or the Code Editor Console for a multi-band image
+Plots a chart to a `ui.Panel` or the Code Editor Console for a multi-band image
 time series. Observations are represented as circles whose color is the
 stretched RGB representation of three selected bands.
 
@@ -284,17 +284,16 @@ stretched RGB representation of three selected bands.
 
 | Param | Type | Description |
 | --- | --- | --- |
-| col | `ee.ImageCollection` | image collection representing a time series of multi-band images. Each image must have a 'system:time_start' |
-| aoi | `ee.Geometry` |  | The region over which to reduce the image data. |
+| col | `ee.ImageCollection` | An image collection representing a time series of multi-band images. Each image must have a 'system:time_start' |
+| aoi | `ee.Geometry` | The region over which to reduce the image data. |
 | yAxisBand | <code>String</code> | The name of the image band whose region reduction will be plot along the chart's y-axis. |
-| visParams | <code>Object</code> | Visualization parameters that assign bands to red, green, and blue and the range to stretch color intensity over. |
+| visParams | <code>Object</code> | Visualization parameters that assign bands to red, green, and blue, and the range to stretch color intensity over. |
 | visParams.bands | <code>Array</code> | An array of three band names to respectively assign to red, green, and blue for RGB visualization. |
-| visParams.min | <code>Array</code> | An array of three band-specific values that define the minimum value to clamp the color stretch range to. Arrange the values in the same order as visParams.bands band names. Use units of the input image data. |
-| visParams.max | <code>Array</code> | An array of three band-specific values that define the maximum value to clamp the color stretch range to. Arrange the values in the same order as visParams.bands band names. Use units of the input image data. |
-| plotHere | <code>ui.Panel|String</code> | Either a ui.Panel to add the chart to or 'console' to print the chart to the Code Editor console. |
-| optionalParams | <code>Object</code> | Optional. A set of optional parameters to set for controling region reduction and stying the chart. |
-| optionalParams.reducer | <code>ee.Reducer</code> | Optional. The region over which to reduce data. If unspecified, ee.Reducer.first is used. |
+| visParams.min | <code>Array</code> | An array of three band-specific values that define the minimum value to clamp the color stretch range to. Arrange the values in the same order as `visParams.bands` band names. Use units of the input image data. |
+| visParams.max | <code>Array</code> | An array of three band-specific values that define the maximum value to clamp the color stretch range to. Arrange the values in the same order as `visParams.bands` band names. Use units of the input image data. |
+| plotHere | <code>ui.Panel|String</code> | Either a `ui.Panel` to add the chart to or 'console' to print the chart to the Code Editor console. |
+| optionalParams | <code>Object</code> | Optional. A set of optional parameters to set for controlling region reduction and stying the chart. |
+| optionalParams.reducer | <code>ee.Reducer</code> | Optional. The region over which to reduce data. If unspecified, `ee.Reducer.first` is used. |
 | optionalParams.crs | <code>String</code> | Optional. The projection to work in. If unspecified, the projection of the first image is used. |
 | optionalParams.scale | <code>Number</code> | Optional. A nominal scale in meters of the projection to work in. If unspecified, the nominal scale of the first image is used. |
-| optionalParams.chartParams | <code>Object</code> | Optional. ui.Chart parameters accepected by ui.Chart.setOptions. See https://developers.google.com/earth-engine/guides/charts_style for more details. |
-
+| optionalParams.chartParams | <code>Object</code> | Optional. ui.Chart parameters accepected by `ui.Chart.setOptions`. See https://developers.google.com/earth-engine/guides/charts_style for more details. |
