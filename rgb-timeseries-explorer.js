@@ -36,9 +36,11 @@ function renderChart(coords) {
   Map.addLayer(aoi, {color: '#b300b3'});
   
   // Build annual time series collection.
-  lcb.setProps({
-    aoi: aoi
-  });
+  lcbProps['aoi'] = aoi;
+  lcb.props = lcb.setProps(lcbProps);
+  
+  // Define annual collection year range as ee.List.
+  var years = ee.List.sequence(lcb.props.startYear, lcb.props.endYear);
   var col = ee.ImageCollection.fromImages(years.map(plan));
   
   // Render the time series chart.
@@ -47,7 +49,7 @@ function renderChart(coords) {
 }
 
 // Set initial ee-lcb params: the date range is for CONUS summer.
-lcb.setProps({
+var lcbProps = {
   startYear: 1984,
   endYear: 2020,
   startDate: '06-20',
@@ -55,7 +57,8 @@ lcb.setProps({
   sensors: ['LT05', 'LE07', 'LC08'],
   cfmask: ['cloud', 'shadow'],
   printProps: false
-});
+}
+lcb.setProps(lcbProps);
 
 // Define an annual collection plan.
 var plan = function(year){
@@ -64,9 +67,6 @@ var plan = function(year){
     .map(lcb.sr.addBandNBR);
   return lcb.sr.mosaicMean(col);
 };
-
-// Define annual collection year range as ee.List.
-var years = ee.List.sequence(lcb.props.startYear, lcb.props.endYear);
 
 // Define constants: use NBR for y-axis, SWIR1, NIR, Green for RGB.
 var Y_AXIS_BAND = 'NBR';
