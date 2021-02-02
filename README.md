@@ -6,7 +6,7 @@ Plots a chart to a `ui.Panel` or the Code Editor Console for a multi-band image
 time series. Observations are represented as circles whose color is the
 stretched RGB representation of three selected bands.
 
-### [**Try the app** — click a point 🖱️, get a Landsat RGB time series chart 📈](https://code.earthengine.google.com/078f1c88b3c9913b5388ef6f773f36a4){:target="_blank"}
+### [**Try the app** — click a point 🖱️, get a Landsat RGB time series chart 📈](https://code.earthengine.google.com/078f1c88b3c9913b5388ef6f773f36a4)
 
 ![](demo_01.png)
 
