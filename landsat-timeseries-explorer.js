@@ -30,18 +30,20 @@ var lcb = require('users/jstnbraaten/modules:ee-lcb.js');
 // #############################################################################
 
 // Style.
-var CONTROL_PANEL_WIDTH = '255px';
-var CONTROL_PANEL_WIDTH_HIDE = '139px';
+var CONTROL_PANEL_WIDTH = '270px';
+var CONTROL_PANEL_WIDTH_HIDE = '141px';
 var textFont = {fontSize: '12px'};
 var headerFont = {
   fontSize: '13px', fontWeight: 'bold', margin: '4px 8px 0px 8px'};
 var sectionFont = {
-  fontSize: '16px', color: '#808080', margin: '16px 8px 8px 6px'};
+  fontSize: '16px', color: '#808080', margin: '16px 8px 0px 8px'};
 var infoFont = {fontSize: '11px', color: '#505050'};
 
 // Control panel.
 var controlPanel = ui.Panel({
-  style: {position: 'top-left', width: CONTROL_PANEL_WIDTH_HIDE}});
+  style: {position: 'top-left', width: CONTROL_PANEL_WIDTH_HIDE,
+    maxHeight: '90%'
+  }});
 
 // Info panel.
 var infoElements = ui.Panel(
@@ -57,7 +59,7 @@ var instr = ui.Label('Click on a location',
 
 // Show/hide info panel button.
 var infoButton = ui.Button(
-  {label: 'Info ❯', style: {margin: '0px 4px 0px 0px'}});
+  {label: 'About ❯', style: {margin: '0px 4px 0px 0px'}});
 
 // Show/hide control panel button.
 var controlButton = ui.Button(
@@ -71,9 +73,10 @@ var buttonPanel = ui.Panel(
 
 // Options label.
 var optionsLabel = ui.Label('Options', sectionFont);
+optionsLabel.style().set('margin', '16px 8px 2px 8px');
 
 // Information label.
-var infoLabel = ui.Label('Information', sectionFont);
+var infoLabel = ui.Label('About', sectionFont);
 
 // Information text. 
 var aboutLabel = ui.Label(
@@ -85,7 +88,11 @@ var aboutLabel = ui.Label(
   'radius circle around the clicked point in the map.',
   infoFont);
 
-var appCodeLink = ui.Label('App source code', infoFont, '')
+var appCodeLink = ui.Label({
+  value: 'App source code',
+  style: {fontSize: '11px', color: '#505050', margin: '-4px 8px 0px 8px'}, 
+  targetUrl: 'https://github.com/jdbcode/ee-rgb-timeseries/blob/main/landsat-timeseries-explorer.js'
+});
 
 // Date panel.
 var dateSectionLabel = ui.Label(
@@ -240,7 +247,7 @@ var OPTIONAL_PARAMS = {
 // Set initial ee-lcb params: the date range is for CONUS summer.
 var LCB_PROPS = {
   startYear: 1984,
-  endYear: 2020,
+  endYear: new Date().getFullYear(), 
   startDate: startDayBox.getValue(),
   endDate: endDayBox.getValue(),
   sensors: ['LT05', 'LE07', 'LC08'],
@@ -412,11 +419,11 @@ function infoButtonHandler() {
   if(infoShow) {
     infoShow = false;
     infoElements.style().set('shown', false);
-    infoButton.setLabel('Info ❯');
+    infoButton.setLabel('About ❯');
   } else {
     infoShow = true;
     infoElements.style().set('shown', true);
-    infoButton.setLabel('Info ❮');
+    infoButton.setLabel('About ❮');
   }
   
   if(infoShow | controlShow) {
@@ -434,6 +441,7 @@ function infoButtonHandler() {
 
 infoElements.add(infoLabel);
 infoElements.add(aboutLabel);
+infoElements.add(appCodeLink);
 
 controlElements.add(optionsLabel);
 controlElements.add(datePanel);
