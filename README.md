@@ -12,7 +12,7 @@ You supply the image collection and the region of interest and
 
 ### [**See it in an app** — click a point 🖱️, get a Landsat RGB time series chart 📈](https://jstnbraaten.users.earthengine.app/view/landsat-timeseries-explorer)
 
-![](landsat_timeseries_explorer.png)
+![](imgs/landsat_timeseries_explorer.jpg)
 
 ## Guide
 
@@ -40,7 +40,7 @@ var rgbTs = require('users/jstnbraaten/modules:rgb-timeseries/rgb-timeseries.js'
 
 ### MODIS Example
 
-![](demo_02.png)
+![](imgs/demo_02.png)
 
 ```js
 // Import rgb-timeseries module.
@@ -110,7 +110,7 @@ rgbTs.rgbTimeSeriesChart(
 
 ### Landsat Example
 
-![](demo_03.png)
+![](imgs/demo_03.png)
 
 ```js
 // Import rgb-timeseries module.
@@ -189,7 +189,7 @@ rgbTs.rgbTimeSeriesChart(
 
 ### Sentinel-2 Example
 
-![](demo_04.png)
+![](imgs/demo_04.png)
 
 ```js
 // Import rgb-timeseries module.
