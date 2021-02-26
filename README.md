@@ -117,7 +117,7 @@ rgbTs.rgbTimeSeriesChart(
 var rgbTs = require(
   'users/jstnbraaten/modules:rgb-timeseries/rgb-timeseries.js'); 
 
-// Import Landsat Collection Builder module.
+// Import Landsat Collection Builder module: https://jdbcode.github.io/EE-LCB/
 var lcb = require('users/jstnbraaten/modules:ee-lcb.js'); 
 
 // Define point of interest - a forest harvest in Oregon.
