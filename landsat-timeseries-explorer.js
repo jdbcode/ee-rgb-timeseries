@@ -19,8 +19,11 @@
 // ### IMPORT MODULES ###
 // #############################################################################
 
+// RGB time series charting module: https://github.com/jdbcode/ee-rgb-timeseries
 var rgbTs = require(
   'users/jstnbraaten/modules:rgb-timeseries/rgb-timeseries.js'); 
+
+// Landsat collection builder module: https://jdbcode.github.io/EE-LCB/
 var lcb = require('users/jstnbraaten/modules:ee-lcb.js'); 
 
 
