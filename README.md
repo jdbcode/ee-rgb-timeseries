@@ -2,11 +2,15 @@
 
 _For the [Google Earth Engine](https://earthengine.google.com/) JavaScript Code Editor_
 
-Plots a chart to a `ui.Panel` or the Code Editor Console for a multi-band image
+An Earth Engine JavaScript Code Editor `require` module that plots a chart to a
+`ui.Panel` or the Code Editor Console for a multi-band image
 time series. Observations are represented as circles whose color is the
 stretched RGB representation of three selected bands.
 
-### [**Try it in an app** — click a point 🖱️, get a Landsat RGB time series chart 📈](https://jstnbraaten.users.earthengine.app/view/landsat-timeseries-explorer)
+You supply the image collection and the region of interest and
+`ee-rgb-timeseries` makes the chart.
+
+### [**See it in an app** — click a point 🖱️, get a Landsat RGB time series chart 📈](https://jstnbraaten.users.earthengine.app/view/landsat-timeseries-explorer)
 
 ![](landsat_timeseries_explorer.png)
 
