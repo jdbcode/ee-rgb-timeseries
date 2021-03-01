@@ -10,7 +10,10 @@ stretched RGB representation of three selected bands.
 You supply the image collection and the region of interest and
 `ee-rgb-timeseries` makes the chart.
 
-### [**See it in an app** — click a point 🖱️, get a Landsat RGB time series chart 📈](https://jstnbraaten.users.earthengine.app/view/landsat-timeseries-explorer)
+### [**See it in some apps** — click a point 🖱️, get an RGB time series chart 📈]
+
+- [**Annual cloud-free Landsat composite time series app**](https://jstnbraaten.users.earthengine.app/view/landsat-timeseries-explorer)
+- [**Sentinel-2 and Landsat-8 image time series app**](https://jstnbraaten.users.earthengine.app/view/eo-timeseries-explorer)
 
 ![](imgs/landsat_timeseries_explorer.jpg)
 
