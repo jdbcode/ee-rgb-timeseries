@@ -75,7 +75,7 @@ ui.url.set('chipwidth', chipWidthUrl);
 
 // Style.
 var CONTROL_PANEL_WIDTH = '280px';
-var CONTROL_PANEL_WIDTH_HIDE = '145px';
+var CONTROL_PANEL_WIDTH_HIDE = '141px';
 var textFont = {fontSize: '12px'};
 var headerFont = {
   fontSize: '13px', fontWeight: 'bold', margin: '4px 8px 0px 8px'};
@@ -132,9 +132,9 @@ var aboutLabel = ui.Label(
   infoFont);
 
 var appCodeLink = ui.Label({
-  value: 'Work in progress, stay tuned for updates',
+  value: 'App source code',
   style: {fontSize: '11px', color: '#505050', margin: '-4px 8px 0px 8px'}, 
-  //targetUrl: 'https://github.com/jdbcode/ee-rgb-timeseries/blob/main/landsat-timeseries-explorer.js'
+  targetUrl: 'https://github.com/jdbcode/ee-rgb-timeseries/blob/main/eo-timeseries-explorer.js'
 });
 
 
@@ -270,6 +270,7 @@ var sensorInfo = {
   'Landsat-8 SR': {
     id: 'LANDSAT/LC08/C01/T1_SR',
     scale: 30,
+    aoiRadius: 45,
     index: {
       NBR: 'NBR',
       NDVI: 'NDVI',
@@ -310,6 +311,7 @@ var sensorInfo = {
   'Landsat-8 TOA': {
     id: 'LANDSAT/LC08/C01/T1_TOA',
     scale: 30,
+    aoiRadius: 45,
     index: {
       NBR: 'NBR',
       NDVI: 'NDVI',
@@ -350,6 +352,7 @@ var sensorInfo = {
   'Sentinel-2 SR': {
     id: 'COPERNICUS/S2_SR',
     scale: 20,
+    aoiRadius: 30,
     index: {
       NBR: 'NBR',
       NDVI: 'NDVI',
@@ -390,6 +393,7 @@ var sensorInfo = {
   'Sentinel-2 TOA': {
     id: 'COPERNICUS/S2',
     scale: 20,
+    aoiRadius: 30,
     index: {
       NBR: 'NBR',
       NDVI: 'NDVI',
@@ -576,12 +580,14 @@ function displayBrowseImg(col, aoiBox, aoiCircle) {
  * Generates chart and adds image cards to the image panel.
  */
 function renderGraphics(coords) {
+  var sensor = sensorSelect.getValue();
+
   // Get the selected RGB combo vis params.
   var visParams = sensorInfo[sensorSelect.getValue()]['rgb'][rgbSelect.getValue()];
   
   // Get the clicked point and buffer it.
   var point = ee.Geometry.Point(coords);
-  var aoiCircle = point.buffer(45);
+  var aoiCircle = point.buffer(sensorInfo[sensor]['aoiRadius']);
   var aoiBox = point.buffer(regionWidthSlider.getValue()*1000/2);
   
   // Clear previous point from the Map.
@@ -594,7 +600,7 @@ function renderGraphics(coords) {
   map.centerObject(aoiCircle, 14);
 
   // Get collection options.
-  var sensor = sensorSelect.getValue();
+
   var cloudThresh = cloudSlider.getValue();
   var datasetId = sensorInfo[sensor]['id'];
   var endDate = new Date();
