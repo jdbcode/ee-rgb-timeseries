@@ -24,7 +24,44 @@ var rgbTs = require(
   'users/jstnbraaten/modules:rgb-timeseries/rgb-timeseries.js'); 
 
 // Landsat collection builder module: https://jdbcode.github.io/EE-LCB/
-var lcb = require('users/jstnbraaten/modules:ee-lcb.js'); 
+var lcb = require('users/jstnbraaten/modules:ee-lcb.js');  
+
+
+// #############################################################################
+// ### GET URL PARAMS ###
+// #############################################################################
+
+var initRun = 'false';
+var runUrl = ui.url.get('run', initRun);
+ui.url.set('run', runUrl);
+
+var initLon = -122.91966;
+var lonUrl = ui.url.get('lon', initLon);
+ui.url.set('lon', lonUrl);
+
+var initLat = 44.24135;
+var latUrl = ui.url.get('lat', initLat);
+ui.url.set('lat', latUrl);
+
+var initFrom = '06-10';
+var fromUrl = ui.url.get('from', initFrom);
+ui.url.set('from', fromUrl);
+
+var initTo = '09-20';
+var toUrl = ui.url.get('to', initTo);
+ui.url.set('to', toUrl);
+
+var initIndex = 'NBR';
+var indexUrl = ui.url.get('index', initIndex);
+ui.url.set('index', indexUrl);
+
+var initRgb = 'SWIR1/NIR/GREEN';
+var rgbUrl = ui.url.get('rgb', initRgb);
+ui.url.set('rgb', rgbUrl);
+
+var initChipWidth = 2;
+var chipWidthUrl = ui.url.get('chipwidth', initChipWidth);
+ui.url.set('chipwidth', chipWidthUrl);
 
 
 
@@ -101,11 +138,11 @@ var appCodeLink = ui.Label({
 var dateSectionLabel = ui.Label(
   'Annual composite range (month-day)', headerFont);
 var startDayLabel = ui.Label('From:', textFont);
-var startDayBox = ui.Textbox({value: '06-10', style: textFont});
+var startDayBox = ui.Textbox({value: ui.url.get('from'), style: textFont});
 startDayBox.style().set('stretch', 'horizontal');
 
 var endDayLabel = ui.Label('To:', textFont);
-var endDayBox = ui.Textbox({value:'09-20', style: textFont});
+var endDayBox = ui.Textbox({value: ui.url.get('to'), style: textFont});
 endDayBox.style().set('stretch', 'horizontal');
 
 var datePanel = ui.Panel([
@@ -119,7 +156,7 @@ var indexLabel = ui.Label('Y-axis index (bands are LC08)', headerFont);
 var indexList = ['NBR', 'NDVI', 'TCB', 'TCG', 'TCW',
                  'B2', 'B3', 'B4', 'B5', 'B6', 'B7'];
 var indexSelect = ui.Select(
-  {items: indexList, value: 'NBR', style: {stretch: 'horizontal'}});
+  {items: indexList, value: ui.url.get('index'), style: {stretch: 'horizontal'}});
 var indexPanel = ui.Panel(
   [indexLabel, indexSelect], null, {stretch: 'horizontal'});
 
@@ -128,16 +165,18 @@ var rgbLabel = ui.Label({value: 'RGB visualization', style: headerFont});
 var rgbList = ['SWIR1/NIR/GREEN', 'RED/GREEN/BLUE', 'NIR/RED/GREEN',
                'TCB/TCG/TCW', 'NIR/SWIR1/RED'];
 var rgbSelect = ui.Select({
-  items: rgbList, placeholder: 'SWIR1/NIR/GREEN',
-  value: 'SWIR1/NIR/GREEN', style: {stretch: 'horizontal'}
+  items: rgbList, placeholder: ui.url.get('rgb'),
+  value: ui.url.get('rgb'), style: {stretch: 'horizontal'}
 });
 var rgbPanel = ui.Panel([rgbLabel, rgbSelect], null, {stretch: 'horizontal'});
 
 // Region buffer.
 var regionWidthLabel = ui.Label(
   {value: 'Image chip width (km)', style: headerFont});
-var regionWidthSlider = ui.Slider(
-  {min: 1, max: 10 , value: 2, step: 1, style: {stretch: 'horizontal'}});
+var regionWidthSlider = ui.Slider({
+  min: 1, max: 10 , value: parseInt(ui.url.get('chipwidth')),
+  step: 1, style: {stretch: 'horizontal'}
+});
 var regionWidthPanel = ui.Panel(
   [regionWidthLabel, regionWidthSlider], null, {stretch: 'horizontal'});
 
@@ -345,9 +384,10 @@ function renderGraphics(coords) {
 
   // Add new point to the Map.
   map.addLayer(aoiCircle, {color: AOI_COLOR});
+  map.centerObject(aoiCircle, 14);
   
   // Build annual time series collection.
-  LCB_PROPS['aoi'] = aoiCircle;
+  LCB_PROPS['aoi'] = aoiBox;
   LCB_PROPS['startDate'] = startDayBox.getValue();
   LCB_PROPS['endDate'] = endDayBox.getValue();
   lcb.props = lcb.setProps(LCB_PROPS);
@@ -372,6 +412,9 @@ function renderGraphics(coords) {
 function handleMapClick(coords) {
   CLICKED = true;
   COORDS = [coords.lon, coords.lat];
+  ui.url.set('run', 'true');
+  ui.url.set('lon', COORDS[0]);
+  ui.url.set('lat', COORDS[1]);
   renderGraphics(COORDS);
 }
 
@@ -384,12 +427,31 @@ function handleSubmitClick() {
 }
 
 /**
+ * Sets URL params.
+ */
+function setParams() {
+  ui.url.set('from', startDayBox.getValue());
+  ui.url.set('to', endDayBox.getValue());
+  ui.url.set('index', indexSelect.getValue());
+  ui.url.set('rgb', rgbSelect.getValue());
+  ui.url.set('chipwidth', regionWidthSlider.getValue());
+}   
+  
+/**
  * Show/hide the submit button.
  */
 function showSubmitButton() {
   if(CLICKED) {
     submitButton.style().set('shown', true);
   }
+}
+
+/**
+ * Handles options changes.
+ */
+function optionChange() {
+  showSubmitButton();
+  setParams();
 }
 
 /**
@@ -462,11 +524,11 @@ map.add(controlPanel);
 
 infoButton.onClick(infoButtonHandler);
 controlButton.onClick(controlButtonHandler);
-startDayBox.onChange(showSubmitButton);
-endDayBox.onChange(showSubmitButton);
-rgbSelect.onChange(showSubmitButton);
-indexSelect.onChange(showSubmitButton);
-regionWidthSlider.onChange(showSubmitButton);
+startDayBox.onChange(optionChange);
+endDayBox.onChange(optionChange);
+rgbSelect.onChange(optionChange);
+indexSelect.onChange(optionChange);
+regionWidthSlider.onChange(optionChange);
 submitButton.onClick(handleSubmitClick);
 map.onClick(handleMapClick);
 
@@ -474,7 +536,14 @@ map.style().set('cursor', 'crosshair');
 map.setOptions('SATELLITE');
 map.setControlVisibility(
   {layerList: false, fullscreenControl: false, zoomControl: false});
-map.centerObject(ee.Geometry.Point([-122.91966, 44.24135]), 14);
+//map.centerObject(ee.Geometry.Point([-122.91966, 44.24135]), 14);
 
 ui.root.clear();
 ui.root.add(splitPanel);
+
+
+if(ui.url.get('run')) {
+  CLICKED = true;
+  COORDS = [ui.url.get('lon'), ui.url.get('lat')];
+  renderGraphics(COORDS);
+}
