@@ -132,7 +132,7 @@ var aoi = ee.Geometry.Polygon(
           [-122.16977661874903, 44.51745331184276]]]);
 
 // Set initial ee-lcb params: the date range is for CONUS summer.
-lcb.setProps({
+var props = lcb.setProps({
   startYear: 1984,
   endYear: 2020,
   startDate: '06-20',
@@ -152,7 +152,7 @@ var plan = function(year){
 };
 
 // Define annual collection year range as ee.List.
-var years = ee.List.sequence(lcb.props.startYear, lcb.props.endYear);
+var years = ee.List.sequence(props.startYear, props.endYear);
 
 // Define constants: use NBR for y-axis, SWIR1, NIR, Green for RGB.
 var Y_AXIS_BAND = 'NBR';
