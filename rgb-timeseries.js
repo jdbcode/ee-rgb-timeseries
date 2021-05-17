@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-exports.version = '0.1.0';
+exports.version = '0.1.1';
 
 /**
  * Converts RGB component integer to hex string.
@@ -56,7 +56,7 @@ function rgbToHex(rgb) {
  * @ignore
  */
 function scaleToByte(val, min, max) {
-  val = ee.Number.clamp(val, min, max);
+  val = ee.Number(val).clamp(min, max);
   return ee.Number.expression({
     expression: 'round((val - min) / (max - min) * 255)',
     vars: {
