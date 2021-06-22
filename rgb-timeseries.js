@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-exports.version = '0.1.1';
+exports.version = '0.1.2';
 
 /**
  * Converts RGB component integer to hex string.
@@ -128,7 +128,10 @@ function rgbTimeSeriesChart(
       legend: {position: 'none'},
       hAxis: {title: 'Date', titleTextStyle: {italic: false, bold: true}},
       vAxis: {title: yAxisBand, titleTextStyle: {italic: false, bold: true}},
-      interpolateNulls: true
+      interpolateNulls: true,
+    },
+    chartStyle: {
+      height: null
     }
   };
 
@@ -164,11 +167,12 @@ function rgbTimeSeriesChart(
       scaleToByte(ft.get(visParams.bands[1]), visParams.min[1], visParams.max[1]),
       scaleToByte(ft.get(visParams.bands[2]), visParams.min[2], visParams.max[2])
     ]);
-    return ft.set({rgb: rgb});
+    return ft.set({rgb: rgb, 'system:time_start': ft.get('system:time_start')});
   });
 
   // Filter out observations with no data.
-  fcRgb = fcRgb.filter(ee.Filter.notNull(fcRgb.first().propertyNames()));
+  fcRgb = fcRgb.filter(ee.Filter.notNull(fcRgb.first().propertyNames()))
+    .sort('system:time_start');
   
   // Get the list of RGB colors.
   var rgbColors = fcRgb.aggregate_array('rgb');
@@ -186,6 +190,7 @@ function rgbTimeSeriesChart(
       fcRgb, 'system:time_start', yAxisBand, 'label')
       .setChartType('ScatterChart')
       .setOptions(_params.chartParams);
+      chart.style().set(_params.chartStyle);
     
     if(plotHere != 'console'){
       plotHere.clear();
