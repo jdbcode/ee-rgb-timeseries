@@ -264,48 +264,48 @@ var OPTIONAL_PARAMS = {
 
 var sensorInfo = {
   'Landsat-8 SR': {
-    id: 'LANDSAT/LC08/C01/T1_SR',
+    id: 'LANDSAT/LC08/C02/T1_L2',
     scale: 30,
     aoiRadius: 45,
     index: {
       NBR: 'NBR',
       NDVI: 'NDVI',
-      Blue: 'B2',
-      Green: 'B3',
-      Red: 'B4',
-      NIR: 'B5',
-      SWIR1: 'B6',
-      SWIR2: 'B7'
+      Blue: 'SR_B2',
+      Green: 'SR_B3',
+      Red: 'SR_B4',
+      NIR: 'SR_B5',
+      SWIR1: 'SR_B6',
+      SWIR2: 'SR_B7'
     },
     rgb: {
       'SWIR1/NIR/GREEN': {
-        bands: ['B6', 'B5', 'B3'],
-        min: [100, 151 , 50],
-        max: [4500, 4951, 2500],
+        bands: ['SR_B6', 'SR_B5', 'SR_B3'],
+        min: [0.0100, 0.0151 , 0.050],
+        max: [0.4500, 0.4951, 0.2500],
         gamma: [1, 1, 1]
       },
       'RED/GREEN/BLUE': {
-        bands: ['B4', 'B3', 'B2'],
-        min: [0, 50, 50],
-        max: [2500, 2500, 2500],
+        bands: ['SR_B4', 'SR_B3', 'SR_B2'],
+        min: [0.0, 0.050, 0.050],
+        max: [0.2500, 0.2500, 0.2500],
         gamma: [1.2, 1.2, 1.2]
       },
       'NIR/RED/GREEN': {
-        bands: ['B5', 'B4', 'B3'],
-        min: [151, 0, 50],
-        max: [4951, 2500, 2500],
+        bands: ['SR_B5', 'SR_B4', 'SR_B3'],
+        min: [0.0151, 0.0, 0.050],
+        max: [0.4951, 0.2500, 0.2500],
         gamma: [1, 1, 1]
       },
       'NIR/SWIR1/RED': {
-        bands: ['B5', 'B6', 'B3'],
-        min: [151, 100, 50],
-        max: [4951, 4500, 2500],
+        bands: ['SR_B5', 'SR_B6', 'SR_B3'],
+        min: [0.0151, 0.0100, 0.050],
+        max: [0.4951, 0.4500, 0.2500],
         gamma: [1, 1, 1]
       }      
     }
   },
   'Landsat-8 TOA': {
-    id: 'LANDSAT/LC08/C01/T1_TOA',
+    id: 'LANDSAT/LC08/C02/T1_TOA',
     scale: 30,
     aoiRadius: 45,
     index: {
@@ -346,7 +346,7 @@ var sensorInfo = {
     }
   },
   'Sentinel-2 SR': {
-    id: 'COPERNICUS/S2_SR',
+    id: 'COPERNICUS/S2_SR_HARMONIZED',
     scale: 20,
     aoiRadius: 30,
     index: {
@@ -435,50 +435,21 @@ var sensorInfo = {
 // ### DEFINE FUNCTIONS ###
 // #############################################################################
 
-// /**
-// * Cloud mask Landsat images.
-// */
-// function fmask(img) {
-//   var cloudShadowBitMask = 1 << 3;
-//   var cloudsBitMask = 1 << 5;
-//   var qa = img.select('pixel_qa');
-//   var mask = qa.bitwiseAnd(cloudShadowBitMask).eq(0)
-//     .and(qa.bitwiseAnd(cloudsBitMask).eq(0));
-//   return img.updateMask(mask);
-// }
-
-/**
- * Selects and renames bands of interest for TM/ETM+.
- */
-function renameEtm(img) {
-  return img.select(
-    ['B1', 'B2', 'B3', 'B4', 'B5', 'B7'],
-    ['B2', 'B3', 'B4', 'B5', 'B6', 'B7']);
-}
-
 /**
  * Ccloud masks OLI images.
  */
-function prepOli(img) {
-  //img = fmask(img);
- return addDate(addBandsLandsat(img));
+function prepOliSr(img) {
+  var opticalBands = img.select('SR_B.').multiply(0.0000275).add(-0.2);
+  img = img.addBands(opticalBands, null, true);
+  var nbr = img.normalizedDifference(['SR_B5', 'SR_B7']).rename(['NBR']);
+  var ndvi = img.normalizedDifference(['SR_B5', 'SR_B4']).rename('NDVI');
+  return addDate(img.addBands(ee.Image.cat(nbr, ndvi)));
 }
 
-/**
- * Prepares (cloud masks and renames) TM/ETM+ images.
- */
-function prepEtm(img) {
-  //img = fmask(img);
-  return addDate(addBandsLandsat(renameEtm(img)));
-}
-
-/**
- * Add NDVI band Landsat.
- */
-function addBandsLandsat(img) {
+function prepOliToa(img) {
   var nbr = img.normalizedDifference(['B5', 'B7']).rename(['NBR']);
   var ndvi = img.normalizedDifference(['B5', 'B4']).rename('NDVI');
-  return img.addBands(ee.Image.cat(nbr, ndvi));
+  return addDate(img.addBands(ee.Image.cat(nbr, ndvi)));
 }
 
 /**
@@ -505,8 +476,13 @@ function getLandsatCollection(aoi, startDate, endDate, cloudthresh, id) {
   var oliCol = ee.ImageCollection(id)
     .filterBounds(aoi)
     .filterDate(startDate, endDate)
-    .filter(ee.Filter.lt('CLOUD_COVER', cloudthresh))
-    .map(prepOli);
+    .filter(ee.Filter.lt('CLOUD_COVER', cloudthresh));
+
+  if (id == 'LANDSAT/LC08/C02/T1_TOA') {
+    oliCol = oliCol.map(prepOliToa);
+  } else {
+    oliCol = oliCol.map(prepOliSr);
+  }
     
   return oliCol;
 }
