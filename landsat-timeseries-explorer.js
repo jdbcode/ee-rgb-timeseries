@@ -24,8 +24,8 @@ var rgbTs = require(
   'users/jstnbraaten/modules:rgb-timeseries/rgb-timeseries.js'); 
 
 // Landsat collection builder module: https://jdbcode.github.io/EE-LCB/
-var lcb = require('users/jstnbraaten/modules:ee-lcb.js');  
-
+// var lcb = require('users/jstnbraaten/modules:ee-lcb.js');  
+var lsc = require('users/jstnbraaten/modules:ls-composites');
 
 // #############################################################################
 // ### GET URL PARAMS ###
@@ -152,9 +152,8 @@ var datePanel = ui.Panel([
   ], null, {margin: '0px'});
 
 // Y-axis index selection.
-var indexLabel = ui.Label('Y-axis index (bands are LC08)', headerFont);
-var indexList = ['NBR', 'NDVI', 'TCB', 'TCG', 'TCW',
-                 'B2', 'B3', 'B4', 'B5', 'B6', 'B7'];
+var indexLabel = ui.Label('Y-axis index', headerFont); //  (bands are LC08)
+var indexList = ['NBR', 'NDVI', 'BLUE', 'GREEN', 'RED', 'NIR', 'SWIR1', 'SWIR2']; // 'TCB', 'TCG', 'TCW',
 var indexSelect = ui.Select(
   {items: indexList, value: ui.url.get('index'), style: {stretch: 'horizontal'}});
 var indexPanel = ui.Panel(
@@ -163,7 +162,7 @@ var indexPanel = ui.Panel(
 // RGB bands selection.
 var rgbLabel = ui.Label({value: 'RGB visualization', style: headerFont});
 var rgbList = ['SWIR1/NIR/GREEN', 'RED/GREEN/BLUE', 'NIR/RED/GREEN',
-               'TCB/TCG/TCW', 'NIR/SWIR1/RED'];
+               'NIR/SWIR1/RED']; // 'TCB/TCG/TCW', 
 var rgbSelect = ui.Select({
   items: rgbList, placeholder: ui.url.get('rgb'),
   value: ui.url.get('rgb'), style: {stretch: 'horizontal'}
@@ -181,14 +180,16 @@ var regionWidthPanel = ui.Panel(
   [regionWidthLabel, regionWidthSlider], null, {stretch: 'horizontal'});
 
 // A message to wait for image chips to load.
-var waitMsgImgPanel = ui.Label({
-  value: '⚙️' + ' Processing, please wait.',
-  style: {
+var messageStyle = {
     stretch: 'horizontal',
-    textAlign: 'center',
+    //textAlign: 'center',
     backgroundColor: '#d3d3d3'
   }
-});
+var gears = 'https://fonts.gstatic.com/s/i/short-term/release/materialsymbolssharp/settings/wght100grad200fill1/24px.svg'
+var waitMsgImgPanel = ui.Panel([ui.Label({imageUrl: gears, style: {backgroundColor: '#d3d3d3'}}), ui.Label({
+  value: 'Processing, please wait.',
+  style: {backgroundColor: '#d3d3d3', fontSize: '16px', fontWeight: 'bold', margin: '10px 0px 0px 0px'}
+})], ui.Panel.Layout.flow('horizontal'), messageStyle);
 
 // Panel to hold the chart.
 var chartPanel = ui.Panel({style: {height: '25%'}});
@@ -228,41 +229,42 @@ var AOI_COLOR = 'ffffff';  //'b300b3';
 
 // Define vis params.
 var VIS_PARAMS = {
-  bands: ['B6', 'B5', 'B3'],
-  min: [0, 0, 0],
-  max: [4000, 4000, 4000]
+  bands: ['SWIR1', 'NIR', 'GREEN'],
+  min: [0, 0, 0], //[0.100, 0.151 , 0.50],
+  max: [0.45, 0.45, 0.45], //[0.4500, 0.4951, 0.2500],
+  gamma: [1, 1, 1] // [1, 1, 1]
 };
 
 var RGB_PARAMS = {
   'SWIR1/NIR/GREEN': {
-    bands: ['B6', 'B5', 'B3'],
-    min: [100, 151 , 50],
-    max: [4500, 4951, 2500],
-    gamma: [1, 1, 1]
+    bands: ['SWIR1', 'NIR', 'GREEN'],
+    min: [0, 0, 0], //[0.100, 0.151 , 0.50],
+    max: [0.45, 0.45, 0.45], //[0.4500, 0.4951, 0.2500],
+    gamma: [1, 1, 1] // [1, 1, 1]
   },
   'RED/GREEN/BLUE': {
-    bands: ['B4', 'B3', 'B2'],
-    min: [0, 50, 50],
-    max: [2500, 2500, 2500],
-    gamma: [1.2, 1.2, 1.2]
+    bands: ['RED', 'GREEN', 'BLUE'],
+    min: [0, 0, 0], //[.0, .50, .50],
+    max: [0.25, 0.25, 0.25], //[.2500, .2500, .2500],
+    gamma: [1.2, 1.2, 1.2], //[1.2, 1.2, 1.2]
   },
   'NIR/RED/GREEN': {
-    bands: ['B5', 'B4', 'B3'],
-    min: [151, 0, 50],
-    max: [4951, 2500, 2500],
-    gamma: [1, 1, 1]
+    bands: ['NIR', 'RED', 'GREEN'],
+    min: [0, 0, 0], //[.151, .0, .50],
+    max: [0.45, 0.45, 0.45], //[.4951, .2500, .2500],
+    gamma: [0.95, 0.95, 0.95], //[1, 1, 1]
   },
-  'TCB/TCG/TCW': {
-    bands: ['TCB', 'TCG', 'TCW'],
-    min: [604, -49, -2245],
-    max: [5592, 3147, 843],
-    gamma: [1, 1, 1]
-  },
+  // 'TCB/TCG/TCW': {
+  //   bands: ['TCB', 'TCG', 'TCW'],
+  //   min: [604, -49, -2245],
+  //   max: [5592, 3147, 843],
+  //   gamma: [1, 1, 1]
+  // },
   'NIR/SWIR1/RED': {
-    bands: ['B5', 'B6', 'B3'],
-    min: [151, 100, 50],
-    max: [4951, 4500, 2500],
-    gamma: [1, 1, 1]
+    bands: ['NIR', 'SWIR1', 'RED'],
+    min: [0, 0, 0], //[.151, .100, .50],
+    max: [0.45, 0.45, 0.45], //[.4951, .4500, .2500],
+    gamma: [1, 1, 1], //[1, 1, 1]
   }
 };
 
@@ -286,17 +288,17 @@ var OPTIONAL_PARAMS = {
   }
 };
 
-// Set initial ee-lcb params: the date range is for CONUS summer.
-var LCB_PROPS = {
-  startYear: 1984,
-  endYear: new Date().getFullYear(), 
-  startDate: startDayBox.getValue(),
-  endDate: endDayBox.getValue(),
-  sensors: ['LT05', 'LE07', 'LC08'],
-  cfmask: ['cloud', 'shadow'],
-  printProps: false
-};
-lcb.setProps(LCB_PROPS);
+// // Set initial ee-lcb params: the date range is for CONUS summer.
+// var LCB_PROPS = {
+//   startYear: 1984,
+//   endYear: new Date().getFullYear(), 
+//   startDate: startDayBox.getValue(),
+//   endDate: endDayBox.getValue(),
+//   sensors: ['LT05', 'LE07', 'LC08'],
+//   cfmask: ['cloud', 'shadow'],
+//   printProps: false
+// };
+// lcb.setProps(LCB_PROPS);
 
 
 
@@ -304,17 +306,17 @@ lcb.setProps(LCB_PROPS);
 // ### DEFINE FUNCTIONS ###
 // #############################################################################
 
-/**
- * ee-lcb annual Landsat collection plan.
- */
-function imgColPlan(year){
-  var col = lcb.sr.gather(year)
-    .map(lcb.sr.maskCFmask)
-    .map(lcb.sr.addBandNBR)
-    .map(lcb.sr.addBandNDVI)
-    .map(lcb.sr.addBandTC);
-  return lcb.sr.mosaicMedian(col);
-}
+// /**
+// * ee-lcb annual Landsat collection plan.
+// */
+// function imgColPlan(year){
+//   var col = lcb.sr.gather(year)
+//     .map(lcb.sr.maskCFmask)
+//     .map(lcb.sr.addBandNBR)
+//     .map(lcb.sr.addBandNDVI)
+//     .map(lcb.sr.addBandTC);
+//   return lcb.sr.mosaicMedian(col);
+// }
 
 /**
  * Clears image cards from the image card panel.
@@ -366,6 +368,46 @@ function displayBrowseImg(col, aoiBox, aoiCircle) {
 }
 
 /**
+ * Generates composite time series.
+ */
+function getCol(geometry) {
+  var startDate = '1984-' + startDayBox.getValue();
+  var compositeDuration = null;
+  if (endDayBox.getValue() >= startDayBox.getValue()) {
+    compositeDuration = ee.Date('1984-' + endDayBox.getValue())
+      .difference(ee.Date('1984-' + startDayBox.getValue()), 'days');
+  } else {
+    compositeDuration = ee.Date('1984-' + endDayBox.getValue())
+      .difference(ee.Date('1983-' + startDayBox.getValue()), 'days');
+  }
+  var compositeDurationUnit = 'days';
+  var stepValue = 1;
+  var stepUnit = 'year';
+  var nSteps = new Date().getFullYear() - 1984 + 1;
+  
+  var col = lsc.makeCompositeTs(
+    startDate, compositeDuration, compositeDurationUnit, stepValue, stepUnit, nSteps, geometry);
+
+  col = col.map(function(img) {
+    return img.set('composite_year', ee.Date(img.getNumber('start_time')).get('year'));
+  });
+
+  return col; 
+}
+
+
+// function drawMapImg() {
+//   var col = getCol(ee.Geometry.Rectangle(map.getBounds(), null, false));
+//   var img = col.select(indexSelect.getValue()).toBands()
+//   RGB_PARAMS[rgbSelect.getValue()].min[0]
+//   map.addLayer(img, {min: RGB_PARAMS[rgbSelect.getValue()].min[0], max: RGB_PARAMS[rgbSelect.getValue()].max[0]})
+// }
+// map.onChangeBounds(ui.util.debounce(drawMapImg, 500))
+
+
+
+
+/**
  * Generates chart and adds image cards to the image panel.
  */
 function renderGraphics(coords) {
@@ -386,15 +428,17 @@ function renderGraphics(coords) {
   map.addLayer(aoiCircle, {color: AOI_COLOR});
   map.centerObject(aoiCircle, 14);
   
-  // Build annual time series collection.
-  LCB_PROPS['aoi'] = aoiBox;
-  LCB_PROPS['startDate'] = startDayBox.getValue();
-  LCB_PROPS['endDate'] = endDayBox.getValue();
-  lcb.props = lcb.setProps(LCB_PROPS);
+  // // Build annual time series collection.
+  // LCB_PROPS['aoi'] = aoiBox;
+  // LCB_PROPS['startDate'] = startDayBox.getValue();
+  // LCB_PROPS['endDate'] = endDayBox.getValue();
+  // lcb.props = lcb.setProps(LCB_PROPS);
   
-  // Define annual collection year range as ee.List.
-  var years = ee.List.sequence(lcb.props.startYear, lcb.props.endYear);
-  var col = ee.ImageCollection.fromImages(years.map(imgColPlan));
+  // // Define annual collection year range as ee.List.
+  // var years = ee.List.sequence(lcb.props.startYear, lcb.props.endYear);
+  // var col = ee.ImageCollection.fromImages(years.map(imgColPlan));
+
+  var col = getCol(aoiBox);
 
   // Display the image chip time series. 
   displayBrowseImg(col, aoiBox, aoiCircle);
