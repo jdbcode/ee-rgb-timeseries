@@ -124,7 +124,7 @@ var aboutLabel = ui.Label(
   'datasets and locations for images collected within two years of today. Time series ' +
   'point colors are defined by RGB assignment to selected bands where ' +
   'intensity is based on the area-weighted mean pixel value within a radius ' +
-  'around the clicked point in the map (30 m for Sentinel-2, 45 m for Landsat-8).',
+  'around the clicked point in the map (30 m for Sentinel-2, 45 m for Landsat-8/9).',
   infoFont);
 
 var appCodeLink = ui.Label({
@@ -138,7 +138,7 @@ var appCodeLink = ui.Label({
 // Sensor selection.
 var sensorLabel = ui.Label({value: 'Sensor selection', style: headerFont});
 var sensorList = ['Sentinel-2 SR', 'Sentinel-2 TOA',
-                  'Landsat-8 SR', 'Landsat-8 TOA'];
+                  'Landsat-8/9 SR', 'Landsat-8/9 TOA'];
 var sensorSelect = ui.Select({
   items: sensorList, placeholder: ui.url.get('sensor'),
   value: ui.url.get('sensor'), style: {stretch: 'horizontal'}
@@ -263,7 +263,7 @@ var OPTIONAL_PARAMS = {
 };
 
 var sensorInfo = {
-  'Landsat-8 SR': {
+  'Landsat-8/9 SR': {
     id: 'LANDSAT/LC08/C02/T1_L2',
     scale: 30,
     aoiRadius: 45,
@@ -304,7 +304,7 @@ var sensorInfo = {
       }      
     }
   },
-  'Landsat-8 TOA': {
+  'Landsat-8/9 TOA': {
     id: 'LANDSAT/LC08/C02/T1_TOA',
     scale: 30,
     aoiRadius: 45,
@@ -473,12 +473,20 @@ function addDate(img) {
  * Gathers all Landsat into a collection.
  */
 function getLandsatCollection(aoi, startDate, endDate, cloudthresh, id) {
-  var oliCol = ee.ImageCollection(id)
+  var id8 = id;
+  var id9 = id.replace('LC08', 'LC09');
+  
+  var oli8Col = ee.ImageCollection(id8)
     .filterBounds(aoi)
     .filterDate(startDate, endDate)
     .filter(ee.Filter.lt('CLOUD_COVER', cloudthresh));
+  var oli9Col = ee.ImageCollection(id9)
+    .filterBounds(aoi)
+    .filterDate(startDate, endDate)
+    .filter(ee.Filter.lt('CLOUD_COVER', cloudthresh));
+  var oliCol = oli8Col.merge(oli9Col).sort('system:time_start');
 
-  if (id == 'LANDSAT/LC08/C02/T1_TOA') {
+  if (id8 == 'LANDSAT/LC08/C02/T1_TOA') {
     oliCol = oliCol.map(prepOliToa);
   } else {
     oliCol = oliCol.map(prepOliSr);
@@ -583,7 +591,7 @@ function renderGraphics(coords) {
   var col;
   if(sensor == 'Sentinel-2 SR' | sensor == 'Sentinel-2 TOA') {
     col = getS2SrCldCol(aoiBox, startDate, endDate, cloudThresh, datasetId);
-  } else if(sensor == 'Landsat-8 SR' | sensor == 'Landsat-8 TOA') {
+  } else if(sensor == 'Landsat-8/9 SR' | sensor == 'Landsat-8/9 TOA') {
     col = getLandsatCollection(aoiBox, startDate, endDate, cloudThresh, datasetId);
   }
 
