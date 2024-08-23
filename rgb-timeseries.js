@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-exports.version = '0.1.2';
+exports.version = '0.1.3';
 
 /**
  * Converts RGB component integer to hex string.
@@ -110,9 +110,15 @@ function rgbTimeSeriesChart(
   col, aoi, yAxisBand, visParams, plotHere, optionalParams) {
   // Since using evaluate, indicate that things are working.
   var message = '⚙️ Processing, please wait.';
+  var gears = 'https://fonts.gstatic.com/s/i/short-term/release/materialsymbolssharp/settings/wght100grad200fill1/24px.svg';
+  var waitMsgImgPanel = ui.Panel([ui.Label({imageUrl: gears}), ui.Label({
+    value: 'Processing, please wait.',
+    style: {fontSize: '16px', fontWeight: 'bold', margin: '10px 0px 0px 0px'}
+  })], ui.Panel.Layout.flow('horizontal'), {stretch: 'horizontal'});
+
   if(plotHere != 'console') {
     plotHere.clear();
-    plotHere.add(ui.Label(message));
+    plotHere.add(waitMsgImgPanel);  // ui.Label(message)
   } else {
     print(message);
   }
@@ -143,6 +149,7 @@ function rgbTimeSeriesChart(
   }
   
   // Perform reduction.
+  print('col', col);
   var fc = col.map(function(img) {
     var reduction = img.reduceRegion({
       reducer: _params.reducer,
@@ -158,8 +165,10 @@ function rgbTimeSeriesChart(
       label: ee.String(yAxisBand+' ').cat(img.date().format('YYYY-MM-dd'))
     });
   })
-  .filter(ee.Filter.notNull(col.first().bandNames()));
+  //.filter(ee.Filter.notNull(col.first().bandNames()));
   
+  print('fc', fc)
+  print('visParams', visParams)
   // Add 3-band RGB color as a feature property.
   var fcRgb = fc.map(function(ft) {
     var rgb = ee.List([
