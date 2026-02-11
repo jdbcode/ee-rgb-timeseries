@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-exports.version = '0.1.3';
+exports.version = '0.1.4';
 
 /**
  * Converts RGB component integer to hex string.
@@ -165,7 +165,7 @@ function rgbTimeSeriesChart(
       label: ee.String(yAxisBand+' ').cat(img.date().format('YYYY-MM-dd'))
     });
   })
-  //.filter(ee.Filter.notNull(col.first().bandNames()));
+  .filter(ee.Filter.notNull(col.first().bandNames()));
   
   print('fc', fc)
   print('visParams', visParams)
